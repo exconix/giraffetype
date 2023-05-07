@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MonkeyType Copy</title>
+  <style>
+    body {
+      background-color: transparent;
+      color: #646669;
+    }
+    #text-container {
+      font-family: "Roboto Mono", monospace;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    #text-container span.current {
+      background-color: white;
+      color: #646669;
+    }
+    #timer-container {
+      font-family: "Roboto Mono", monospace;
+      font-size: 28px;
+      color: #e2b714;
+    }
+  </style>
+  <script>
+    var words = [
+      "the", "of", "to", "and", "a",
+      "in", "is", "it", "you", "that",
+      "he", "was", "for", "on", "are",
+      "with", "as", "his", "they",
+      "be", "at", "one", "have", "this",
+      "from", "or", "had", "by", "not",
+      "word", "but", "what", "some", "we",
+      "can", "out", "other", "were", "all",
+      "there", "when", "up", "use", "your",
+      "how", "said", "an", "each", "she",
+      "which", "do", "their", "time", "if",
+      "will", "way", "about", "many", "then",
+      "them", "write", "would", "like", "so",
+      "these", "her", "long", "make", "thing",
+      "see", "him", "two", "has", "look",
+      "more", "day", "could", "go", "come",
+      "did", "number", "sound", "no", "most",
+      "people", "my", "over", "know", "water",
+      "than", "call", "first", "who", "may",
+      "down", "side", "been", "now", "find",
+      "any", "new", "work", "part", "take",
+      "get", "place", "made", "live", "where",
+      "after", "back", "little", "only", "round",
+      "man", "year", "came", "show", "every",
+      "good", "me", "give", "our", "under",
+      "name", "very", "through", "just", "form",
+      "sentence", "great", "think", "say", "help",
+      "low", "line", "differ", "turn", "cause",
+      "much", "mean", "before", "move", "right",
+      "boy", "old", "too", "same", "tell",
+      "does", "set", "three", "want", "air",
+      "well", "also", "play", "small", "end",
+      "put", "home", "read", "hand", "port",
+      "large", "spell", "add", "even", "land",
+      "here", "must", "big", "high", "such",
+      "follow", "act", "why", "ask", "men",
+      "change", "went", "light", "kind", "off",
+      "need", "house", "picture", "try", "us",
+    ];
+    var text = getRandomText(50);
+    var startTime;
+    var timerInterval;
+    var isTyping = false;
+    var wordCount = text.split(" ").length;
+
+    function getRandomText(wordCount) {
+      var randomText = "";
+      for (var i = 0; i < wordCount; i++) {
+        var randomIndex = Math.floor(Math.random() * words.length);
+        randomText += words[randomIndex] + " ";
+      }
+      return randomText.trim();
+    }
+
+    function displayText() {
+      var textContainer = document.getElementById("text-container");
+      textContainer.innerHTML = "";
+      for (var i = 0; i < text.length; i++) {
+        var span = document.createElement("span");
+        span.textContent = text[i];
+        if (i === currentCharIndex) {
+          span.classList.add("current");
+        }
+        textContainer.appendChild(span);
+      }
+    }
+
+function calculateWPM(elapsedTime) {
+  var typedWords = currentCharIndex / 5;
+  var wpm = Math.floor((typedWords / elapsedTime) * 60);
+  var textContainer = document.getElementById("text-container");
+  textContainer.textContent = "Words per Minute: " + wpm;
+    }
+
+    function handleKeyPress(event) {
+      if (!isTyping) {
+        isTyping = true;
+        startTime = Date.now();
+
+        var timerContainer = document.createElement("div");
+        timerContainer.id = "timer-container";
+        document.body.insertBefore(timerContainer, document.body.firstChild);
+
+        var timerSeconds = 30;
+        timerContainer.textContent = timerSeconds;
+
+        timerInterval = setInterval(function() {
+          timerSeconds--;
+          if (timerSeconds <= 0) {
+            clearInterval(timerInterval);
+            timerContainer.textContent = "Time's up!";
+            document.removeEventListener("keypress", handleKeyPress);
+            calculateWPM((Date.now() - startTime) / 1000);
+          } else {
+            timerContainer.textContent = timerSeconds;
+          }
+        }, 1000);
+      }
+
+      var currentChar = text[currentCharIndex];
+      if (event.key === currentChar) {
+        currentCharIndex++;
+        if (currentCharIndex >= text.length) {
+          // Reached the end of the text
+          document.removeEventListener("keypress", handleKeyPress);
+          clearInterval(timerInterval);
+          calculateWPM((Date.now() - startTime) / 1000 / 60);
+        }
+        displayText();
+      }
+    }
+
+    var currentCharIndex = 0;
+
+    window.addEventListener("load", function() {
+      displayText();
+      document.addEventListener("keypress", handleKeyPress);
+    });
+  </script>
+</head>
+<body>
+  <div id="text-container"></div>
+</body>
+</html>
